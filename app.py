@@ -25,5 +25,17 @@ def login_fun():
 def signup_fun():
         return render_template('signup.html')
 
+@app.route('/admin_signup')
+def admin_singup():
+        return render_template('admin_signup.html')
+@app.route('/admin_login')
+def admin_login():
+        return render_template('admin_login.html')
+
+#now to store_signup info in database
+@app.route('/store_signup_info', methods=['GET', 'POST'])
+def store_func():
+        return render_template('signup_conf.html')
+
 if __name__ == '__main__':
         app.run(debug=True)
