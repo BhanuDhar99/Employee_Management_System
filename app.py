@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 from wtforms import Form, TextAreaField, validators
 import sqlite3
-import pickle
 import pandas as pd
 import os
 import numpy as np
@@ -61,7 +60,7 @@ def login_check_fun():
                 correct_password = cur.fetchall()
         if(correct_password[0][0]==password):
                 #redirect to user (non-admin) portal
-                return render_template('successful_user_login.html')
+                return render_template('user_portal.html')
         else:
                 return render_template('unsuccessful_user_login.html')
 
@@ -93,8 +92,8 @@ def login_check_fun_admin():
                 correct_password = cur.fetchall()
         if(correct_password[0][0]==password):
                 #redirect to admin portal
-                return render_template('successful_user_login.html')
+                return render_template('admin_portal.html')
         else:
-                return render_template('unsuccessful_user_login.html')
+                return render_template('unsuccessful_admin_login.html')
 if __name__ == '__main__':
         app.run(debug=True)
