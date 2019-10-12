@@ -1,3 +1,62 @@
 <html>
-This is the admin signup page
+<head>
+<title>This is the page for Administrators to signup</title>
+</head>
+<body>
+<H2>Welcome to the signup page! Please enter your information so that we can log you in</H2>
+<br>
+<form method = "POST" action ="/admin_store_signup_info">
+<ul>
+<li id="li_1" 
+		<label class="description" for="element_1">First Name</label>
+		<div>
+				<input id="element_1" name="Fname" class="element text small" type="text" value=""/>
+		</div>
+		</li>	
+<br>
+<br>
+<li id="li_2" 
+		<label class="description" for="element_2">Last name</label>
+		<div>
+			<input id="element_2" name="Lname" class="element text small" type="text" value=""/>
+		</div>
+		</li>
+<br>
+<br>
+<li id="li_3" 
+		<label class="description" for="element_3">Email</label>
+		<div>
+			<input id="element_3" name="Email" class="element text small" type="text" value=""/>
+		</div>
+		</li>
+<br><br>
+<li id="li_4" 
+		<label class="description" for="element_4">Password</label>
+		<div>
+			<input id="element_4" name="password" class="element text small" type="password" value=""/>
+		</div>
+		</li>
+<br><br>
+<li id="li_5" 
+		<label class="description" for="element_5">Phone Number</label>
+		<div>
+			<input id="element_5" name="PhoneNumber" class="element text small" type="number" value=""/ max = "9999999999">
+		</div>
+		</li>
+<br><br>
+
+<li id="li_6" 
+		<label class="description" for="element_6">Organization</label>
+			<div>
+			<input id="element_6" name="Organization" class="element text small" type="text" value=""/>
+		</div>
+		</li>
+
+
+</ul>
+<div>
+	<input type=submit value='Enter' name='submit_btn'>
+		</div>
+</form>
+</body>
 </html>
