@@ -51,7 +51,7 @@ def store_func():
         return render_template('signup_conf.html')
 
 #this route is called after user enters login information
-@app.route('/login_check')
+@app.route('/login_check', methods = ['GET', 'POST'])
 def login_check_fun():
         email = request.form['Email']
         password = request.form['Password']
