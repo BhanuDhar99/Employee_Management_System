@@ -1,3 +1,37 @@
 <html>
-This page is for succesful authentication and view of all projects in the organization
+<head>
+<style>
+table{
+ border : 2px black solid;
+}
+th{ border : 0px 0px 0px 2px black solid;
+}
+</style>
+<title>This is the project view page after successful authentication</title>
+</head>
+<body>
+<H1>Here are the projects of your organization!</H1>
+<table>
+{% for item in items %}
+    <tr>
+       <th>Organization</th>
+<th>Project Name</th>
+<th>Project Domain</th>
+<th>Project Descrpt.</th>
+    </tr>
+
+<tr>
+
+<td>{{item[1]}}</td>
+
+<td>{{item[2]}}</td>
+
+<td>{{item[3]}}</td>
+
+<td>{{item[4]}}</td>
+
+
+</tr>
+{% endfor %}
+</body>
 </html>
