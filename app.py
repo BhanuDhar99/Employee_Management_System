@@ -60,7 +60,7 @@ def login_check_fun():
                 correct_password = cur.fetchall()
         if(correct_password[0][0]==password):
                 #redirect to user (non-admin) portal
-                return render_template('portal_pages/user_portal.html')
+                return render_template('user_portal_pages/user_portal.html')
         else:
                 return render_template('user_portal_pages/unsuccessful_user_login.html')
 
@@ -104,10 +104,6 @@ def login_check_fun_admin():
 def show_admin_portal():
         return render_template('admin_portal_pages/admin_portal.html')
         
-@app.errorhandler(500)
-def page_not_found(e):
-        #in case of internal server error
-        return render_template('error.html')
 
 #route is called when the admin clicks on the create new project option for the first time
 @app.route('/create_project')
@@ -172,6 +168,46 @@ def show_admin_projects_page():
                 return render_template('admin_portal_pages/back_to_homepage.html')
                 
 
-        
+#below routes are for viewing members :
+
+#route is called when admin clicks on view members - displays status
+@app.route('/admin_view_members')
+def show_admin_members():
+        return render_template('admin_portal_pages/admin_member_extract_info.html')
+#rote is called by the above route to validate :
+@app.route('/validate_admin_info_show_members', methods = ['GET', 'POST'])
+def show_admin_members_page():
+        admin_email = request.form['AdminEmail']
+        org_name = request.form['OrganizationName']
+        password = request.form['Password']
+
+        #now to validate with the Admin information data base table
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''SELECT Password from AdminInfo where Email =?''',(admin_email,))
+                correct_pass = cur.fetchall()
+
+        if(correct_pass[0][0]==password):
+                with sqlite3.connect('ems.db') as con:
+                        cur = con.cursor()
+                        cur.execute('''SELECT OrgName from AdminInfo where Email =?''',(admin_email,))
+                        correct_org = cur.fetchall()
+                if(correct_org[0][0] == org_name):
+                        with sqlite3.connect('ems.db') as con:
+                                cur= con.cursor()
+                                cur.execute('''SELECT*FROM UserInfo where OrgName = ?''',(org_name,))            
+                                
+                        return render_template('admin_portal_pages/show_admin_org_members.html',items = cur.fetchall())
+                else:
+                        return render_template('admin_portal_pages/back_to_homepage.html')
+        else:
+                return render_template('admin_portal_pages/back_to_homepage.html')
+
+@app.errorhandler(500)
+def page_not_found(e):
+        #in case of internal server error
+        return render_template('error.html')
+
+
 if __name__ == '__main__':
         app.run(debug=True)
