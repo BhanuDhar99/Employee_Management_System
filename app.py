@@ -307,9 +307,30 @@ def show_user_joined_project_details():
                         email = cur.fetchall()[0][0]
 
                         cur.execute('''SELECT ProjectName, ProjectDomain, ProjectDescription FROM UserProjectInfo WHERE UserEmail =?''',(email,))
-                        return render_template('user_portal_pages/show_joined_proj_details_user.html', items = cur.fetchall())
+                return render_template('user_portal_pages/show_joined_proj_details_user.html', items = cur.fetchall())
         else:
                 return render_template('user_portal_pages/back_to_homepage.html')
+
+#route to show members belonging to an organization  => this feature is open to all users for purposes of networking and identifying people
+@app.route('/user_view_org_members')
+def show_org_entry_page():
+        return render_template('user_portal_pages/org_name_entry_page.html')
+@app.route('/validate_org_display_results', methods =['GET','POST'])
+def show_org_emp__info():
+        org_name = request.form['OrganizationName']
+        proj_name = request.form['ProjectName']
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''SELECT Fname, Lname, Email,PhoneNumber from UserInfo where OrgName =?''',(org_name,))
+                i1 = cur.fetchall()
+                
+                cur.execute('''SELECT UserEmail from UserProjectInfo where ProjectName =?''',(proj_name,))
+                email = cur.fetchall()[0][0]
+                #showing details based on interested project (project teams)
+                cur.execute('''SELECT Fname, Lname, Email,PhoneNumber from UserInfo where Email=?''',(email,))
+                i2= cur.fetchall()
+        return render_template('user_portal_pages/show_details_with_org_values.html', items1 = i1, items2 = i2)
+        
 
 #route is called to handle error cases
 @app.errorhandler(500)

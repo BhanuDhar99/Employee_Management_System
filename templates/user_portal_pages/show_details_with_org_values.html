@@ -1,0 +1,62 @@
+<html>
+<head>
+<style>
+table{
+ border : 2px black solid;
+}
+th{ border : 0px 0px 0px 2px black solid;
+}
+</style>
+<title>This is the member view page after organization details are entered</title>
+</head>
+<body>
+<H1>Here are the members that are part of your desired organization!</H1>
+<table>
+    <tr>
+<th>First Name</th>
+<th>Last Name</th>
+<th>Email</th>
+<th>Phone Number</th>
+    </tr>
+
+<tr>
+
+{% for item in items1 %}
+<td>{{item[0]}}</td>
+
+<td>{{item[1]}}</td>
+
+<td>{{item[2]}}</td>
+<td>{{item[3]}}</td>
+
+
+</tr>
+{% endfor %}
+<br><br>
+<H1>Here are the members that are part of your desired project!</H1>
+<table>
+    <tr>
+<th>First Name</th>
+<th>Last Name</th>
+<th>Email</th>
+<th>Phone Number</th>
+    </tr>
+
+<tr>
+
+{% for item in items2 %}
+<td>{{item[0]}}</td>
+
+<td>{{item[1]}}</td>
+
+<td>{{item[2]}}</td>
+<td>{{item[3]}}</td>
+
+
+</tr>
+{% endfor %}
+<br><br>
+
+<a href = '/reroute_to_user_portal'><button>Go back to your portal</button></a>
+</body>
+</html>
