@@ -18,18 +18,18 @@ def about_fun():
 
 @app.route('/login')
 def login_fun():
-        return render_template('login.html')
+        return render_template('login_pages/login.html')
 
 @app.route('/signup')
 def signup_fun():
-        return render_template('signup.html')
+        return render_template('signup_pages/signup.html')
 
 @app.route('/admin_signup')
 def admin_singup():
-        return render_template('admin_signup.html')
+        return render_template('signup_pages/admin_signup.html')
 @app.route('/admin_login')
 def admin_login():
-        return render_template('admin_login.html')
+        return render_template('login_pages/admin_login.html')
 
 #now to store_signup info in database
 @app.route('/store_signup_info', methods =['GET','POST'])
@@ -47,7 +47,7 @@ def store_func():
                 cur = con.cursor()
                 cur.execute('''INSERT INTO UserInfo VALUES(?,?,?,?,?,?)''',(fname,lname,email,password,phno,org_name))
                 con.commit
-        return render_template('signup_conf.html')
+        return render_template('signup_pages/signup_conf.html')
 
 #this route is called after user enters login information
 @app.route('/login_check', methods = ['GET', 'POST'])
@@ -60,9 +60,9 @@ def login_check_fun():
                 correct_password = cur.fetchall()
         if(correct_password[0][0]==password):
                 #redirect to user (non-admin) portal
-                return render_template('user_portal.html')
+                return render_template('portal_pages/user_portal.html')
         else:
-                return render_template('unsuccessful_user_login.html')
+                return render_template('user_portal_pages/unsuccessful_user_login.html')
 
 #route is  called to store admin signup info
 @app.route('/admin_store_signup_info', methods =['GET','POST'])
@@ -80,7 +80,8 @@ def store_func_admin():
                 cur = con.cursor()
                 cur.execute('''INSERT INTO AdminInfo VALUES(?,?,?,?,?,?)''',(fname,lname,email,password,phno,org_name))
                 con.commit
-        return render_template('signup_conf.html')
+        return render_template('signup_pages/signup_conf.html')
+
 #this route is used to check admin login
 @app.route('/admin_login_check', methods = ['GET', 'POST'])
 def login_check_fun_admin():
@@ -92,8 +93,85 @@ def login_check_fun_admin():
                 correct_password = cur.fetchall()
         if(correct_password[0][0]==password):
                 #redirect to admin portal
-                return render_template('admin_portal.html')
+                with sqlite3.connect('ems.db') as con:
+                        cur = con.cursor()
+                        cur.execute('''SELECT fname from AdminInfo where Email = ?''',(email,))
+                        fname_ = cur.fetchall()
+                return render_template('admin_portal_pages/admin_portal.html' ,items = fname_[0][0])
         else:
-                return render_template('unsuccessful_admin_login.html')
+                return render_template('login_pages/unsuccessful_admin_login.html')
+@app.route('/reroute_to_admin_portal')
+def show_admin_portal():
+        return render_template('admin_portal_pages/admin_portal.html')
+        
+@app.errorhandler(500)
+def page_not_found(e):
+        #in case of internal server error
+        return render_template('error.html')
+
+#route is called when the admin clicks on the create new project option for the first time
+@app.route('/create_project')
+def create_project():
+        return render_template('admin_portal_pages/admin_create_new_project.html')
+
+#route is called to store the project details that the admin has entered in the database
+@app.route('/store_admin_project_details', methods = ['GET', 'POST'])
+def store_admin_proj_details():
+        admin_email = request.form['AdminEmail']
+        org_name = request.form['OrganizationName']
+        proj_name = request.form['ProjectName']
+        proj_domain = request.form['ProjectDomain']
+        proj_description = request.form['ProjectDescription']
+
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''INSERT INTO AdminProjectInfo VALUES(?,?,?,?,?)''',(admin_email,org_name, proj_name, proj_domain, proj_description))
+                con.commit
+
+        return render_template('admin_portal_pages/project_addition_confirmation.html')
+
+
+
+
+#below routes are used for viewing projects created by administrators
+
+
+
+
+#route is called when admin clicks on view projects - displays status
+@app.route('/admin_view_projects')
+def show_admin_projects():
+        return render_template('admin_portal_pages/admin_view_extract_info.html')
+#route is called by the /admin_view_projects route to store info entered in the admin_view_extract_info.html page and relevant info is projected
+@app.route('/validate_admin_info_show', methods = ['GET', 'POST'])
+def show_admin_projects_page():
+        admin_email = request.form['AdminEmail']
+        org_name = request.form['OrganizationName']
+        password = request.form['Password']
+
+        #now to validate with the Admin information data base table
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''SELECT Password from AdminInfo where Email =?''',(admin_email))
+                correct_pass = cur.fetchall()
+
+        if(correct_pass[0][0]==password):
+                with sqlite3.connect('ems.db') as con:
+                        cur = con.cursor()
+                        cur.execute('''SELECT OrgName from AdminInfo where Email =?''',(admin_email))
+                        correct_org = cur.fetchall()
+                if(correct_org[0][0] == org_name):
+                        with sqlite3.connect('ems.db') as con:
+                                cur= con.cursor()
+                                cur.execute('''SELECT*FROM AdminInfo''')
+                                
+                        return render_template('admin_portal_pages/show_admin_org_projects.html',items = cur.fetchall())
+                else:
+                        return render_template('admin_portal_pages/back_to_homepage.html')
+        else:
+                return render_template('admin_portal_pages/back_to_homepage.html')
+                
+
+        
 if __name__ == '__main__':
         app.run(debug=True)

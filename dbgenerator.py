@@ -13,6 +13,9 @@ conn.execute('''CREATE TABLE AdminInfo(
     Fname text not null, Lname text, Email text not null, Password text not null,
     PhoneNumber integer, OrgName text, unique(Email))''')
 
+conn.execute('''CREATE TABLE AdminProjectInfo(AdminEmail text not null,OrganizationName text not null, ProjectName text not null,
+ProjectDomain text not null, ProjectDescription text not null)''')
+
 conn.commit
 
 print('''Database has been generated. Redirect to flask app.py to insert value
