@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>This page is used  to extract information from user about organization</title>
+</head>
+<body>
+<H1> Hi User, Please enter  the following details as your authentication for viewing your joined project details</H1>
+<form method = "POST" action = "/validate_user_details_show_joined_projects">
+<ul>
+<li id="li_1" 
+		<label class="description" for="element_1">Organization Name</label>
+		<div>
+			<input id="element_1" name="OrganizationName" class="element text small" type="text" value=""/>
+		</div>
+		</li>
+<br>
+<br>
+<li id="li_2" 
+		<label class="description" for="element_2">Password</label>
+		<div>
+			<input id="element_2" name="Password" class="element text small" type="password" value=""/>
+		</div>
+		</li>
+
+<br>
+<br>
+
+</ul>
+</div>
+<input type=submit value='Enter' name='submit_btn'>
+		</div>
+</form>
+<a href = '/reroute_to_user_portal'><button>Go back</button></a>
+
+</body>
+</html>

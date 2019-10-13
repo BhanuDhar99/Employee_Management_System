@@ -235,7 +235,7 @@ def return_to_user_portal():
 def show_join_user_project():
         return render_template('user_portal_pages/user_view_extract_info.html')
 
-@app.route('/validate_user_info_show_members', methods = ['GET', 'POST'])
+@app.route('/validate_user_info_show_projects', methods = ['GET', 'POST'])
 def show_join_user_project_page():
         admin_email = request.form['UserEmail']
         org_name = request.form['OrganizationName']
@@ -264,7 +264,7 @@ def show_join_user_project_page():
                 return render_template('user_portal_pages/back_to_homepage.html')
 
         
-
+#this route is called once user validation has been done in the previous routes
 @app.route('/select_user_project', methods = ['GET', 'POST'])
 def select_user_proj_validate():
         proj_name = request.form['selection']
@@ -286,6 +286,31 @@ def select_user_proj_validate():
                 cur.execute('''INSERT INTO UserProjectInfo VALUES(?,?,?,?,?)''',(email,org_name,proj_name,proj_domain,proj_desc))
                 con.commit
         return render_template('user_portal_pages/project_joining_conf.html')
+
+@app.route('/user_view_projects')
+def ask_user_org_pass():
+        return render_template('user_portal_pages/extract_user_org_pass.html')
+@app.route('/validate_user_details_show_joined_projects', methods=['GET', 'POST'])
+def show_user_joined_project_details():
+        org_name = request.form['OrganizationName']
+        password = request.form['Password']
+        #authenticate and show details or goback to user portal
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''SELECT Password from UserInfo where OrgName =?''',(org_name,))
+                correct_pass = cur.fetchall()[0][0]
+
+        if (correct_pass == password):
+                with sqlite3.connect('ems.db') as con:
+                        cur = con.cursor()
+                        cur.execute('''SELECT Email from UserInfo where Password =?''',(password,))
+                        email = cur.fetchall()[0][0]
+
+                        cur.execute('''SELECT ProjectName, ProjectDomain, ProjectDescription FROM UserProjectInfo WHERE UserEmail =?''',(email,))
+                        return render_template('user_portal_pages/show_joined_proj_details_user.html', items = cur.fetchall())
+        else:
+                return render_template('user_portal_pages/back_to_homepage.html')
+
 #route is called to handle error cases
 @app.errorhandler(500)
 def page_not_found(e):
