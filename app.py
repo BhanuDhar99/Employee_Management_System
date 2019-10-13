@@ -152,18 +152,18 @@ def show_admin_projects_page():
         #now to validate with the Admin information data base table
         with sqlite3.connect('ems.db') as con:
                 cur = con.cursor()
-                cur.execute('''SELECT Password from AdminInfo where Email =?''',(admin_email))
+                cur.execute('''SELECT Password from AdminInfo where Email =?''',(admin_email,))
                 correct_pass = cur.fetchall()
 
         if(correct_pass[0][0]==password):
                 with sqlite3.connect('ems.db') as con:
                         cur = con.cursor()
-                        cur.execute('''SELECT OrgName from AdminInfo where Email =?''',(admin_email))
+                        cur.execute('''SELECT OrgName from AdminInfo where Email =?''',(admin_email,))
                         correct_org = cur.fetchall()
                 if(correct_org[0][0] == org_name):
                         with sqlite3.connect('ems.db') as con:
                                 cur= con.cursor()
-                                cur.execute('''SELECT*FROM AdminInfo''')
+                                cur.execute('''SELECT*FROM AdminProjectInfo where OrganizationName = ?''',(org_name,))
                                 
                         return render_template('admin_portal_pages/show_admin_org_projects.html',items = cur.fetchall())
                 else:
