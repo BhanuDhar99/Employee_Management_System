@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>This is the project view page after successful authentication</title>
+</head>
+<body>
+<H1>Here are the projects of your organization!</H1>
+<H2>You can choose one at a time!</H2>
+<br>
+
+
+<form method = "POST" action = '/select_user_project'>
+{% for item in items %}
+
+<ul>
+<div>
+<input type = "radio" name = 'selection' value = "{{item[2]}}"><u>Project name</u> : {{item[2]}} <br>
+<u>Project Domain</u> : {{item[3]}} <br>
+<u>Project Description</u> : {{item[4]}}
+<br><br></div>
+
+</ul>
+{% endfor %}
+
+<ul>Enter your email here :   
+<input type = "text" name = 'email' <br>
+<br><br>
+
+</ul>
+<input type=submit value='Enter' name='submit_btn'>
+		</div>
+
+</form>
+<br><br>
+<a href = '/reroute_to_user_portal'><button>Go back to portal</button></a>
+</body>
+</html>

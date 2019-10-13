@@ -59,10 +59,27 @@ def login_check_fun():
                 cur.execute('''SELECT Password from UserInfo where Email = ?''',(email,))
                 correct_password = cur.fetchall()
         if(correct_password[0][0]==password):
+                with sqlite3.connect('ems.db') as con:
+                        cur = con.cursor()
+                        cur.execute('''SELECT fname from UserInfo where Email = ?''',(email,))
+                        fname_ = cur.fetchall()
                 #redirect to user (non-admin) portal
-                return render_template('user_portal_pages/user_portal.html')
+                return render_template('user_portal_pages/user_portal.html', items = fname_[0][0])
         else:
-                return render_template('user_portal_pages/unsuccessful_user_login.html')
+                return render_template('login_pages/unsuccessful_user_login.html')
+
+
+
+
+
+
+'''
+ROUTES BELOW ARE USED TO HANDLE ALL ADMIN RELATED TASKS. KINDLY REFER TO HOW CONTROL IS PASSED FROM EACH WEBPAGE AND INFORMATION IS EXTRACTED
+THE SECTION AFTER THIS COVERS ROUTES USED FOR OUR USER PORTAL.
+'''
+
+
+
 
 #route is  called to store admin signup info
 @app.route('/admin_store_signup_info', methods =['GET','POST'])
@@ -203,6 +220,73 @@ def show_admin_members_page():
         else:
                 return render_template('admin_portal_pages/back_to_homepage.html')
 
+
+
+'''
+ROUTES BELOW ARE USED TO HANDLE ALL USER PORTAL RELATED FUNCTIONALITY. KINDLY REFER TO HOW CONTROL IS PASSED BETWEEN WEBPAGES AND THE DATABASE
+THERE IS A STRONG SIMILARITY BETWEEN THE ABOVE TWO TYPES OF ROUTES IN TERMS OF OPERATION.
+'''
+
+#route to return to user portal
+@app.route('/reroute_to_user_portal')
+def return_to_user_portal():
+        return render_template('user_portal_pages/user_portal.html')
+@app.route('/user_view_join_project')
+def show_join_user_project():
+        return render_template('user_portal_pages/user_view_extract_info.html')
+
+@app.route('/validate_user_info_show_members', methods = ['GET', 'POST'])
+def show_join_user_project_page():
+        admin_email = request.form['UserEmail']
+        org_name = request.form['OrganizationName']
+        password = request.form['Password']
+
+        #now to validate with the Admin information data base table
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''SELECT Password from UserInfo where Email =?''',(admin_email,))
+                correct_pass = cur.fetchall()
+
+        if(correct_pass[0][0]==password):
+                with sqlite3.connect('ems.db') as con:
+                        cur = con.cursor()
+                        cur.execute('''SELECT OrgName from UserInfo where Email =?''',(admin_email,))
+                        correct_org = cur.fetchall()
+                if(correct_org[0][0] == org_name):
+                        with sqlite3.connect('ems.db') as con:
+                                cur= con.cursor()
+                                cur.execute('''SELECT*FROM AdminProjectInfo where OrganizationName = ?''',(org_name,))
+                                
+                        return render_template('user_portal_pages/show_user_org_projects.html',items = cur.fetchall())
+                else:
+                        return render_template('user_portal_pages/back_to_homepage.html')
+        else:
+                return render_template('user_portal_pages/back_to_homepage.html')
+
+        
+
+@app.route('/select_user_project', methods = ['GET', 'POST'])
+def select_user_proj_validate():
+        proj_name = request.form['selection']
+        #now to store attributes of project selected into the User projects information table in our database :
+        email = request.form['email']
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''SELECT OrgName from UserInfo where Email =?''',(email,))
+                org_name = cur.fetchall()[0][0]
+
+                cur.execute('''SELECT ProjectDomain from AdminProjectInfo where ProjectName = ?''',(proj_name,))
+                proj_domain = cur.fetchall()[0][0]
+
+                cur.execute('''SELECT ProjectDescription  from AdminProjectInfo where ProjectName =?''',(proj_name,))
+                proj_desc = cur.fetchall()[0][0]
+        #now to populate our table :
+        with sqlite3.connect('ems.db') as con:
+                cur = con.cursor()
+                cur.execute('''INSERT INTO UserProjectInfo VALUES(?,?,?,?,?)''',(email,org_name,proj_name,proj_domain,proj_desc))
+                con.commit
+        return render_template('user_portal_pages/project_joining_conf.html')
+#route is called to handle error cases
 @app.errorhandler(500)
 def page_not_found(e):
         #in case of internal server error
