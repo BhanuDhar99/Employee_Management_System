@@ -8,3 +8,5 @@ Steps to use  :
 4) python app.py 
 5) opening issues/PRs are  welcome! 
 
+6) Website is deployed on heroku at : https://emp-mgt-system.herokuapp.com/
+
